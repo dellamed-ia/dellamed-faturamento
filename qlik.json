@@ -1,0 +1,16 @@
+{
+  "_leia": "Troque os nomes pelos campos e expressões reais do seu app no Qlik. {SET} é substituído pelo set_analysis abaixo.",
+  "campos": {
+    "linha": "Linha",
+    "segmento": "Segmento",
+    "subgrupo": "Sub-Grupo"
+  },
+  "medidas": {
+    "faturamento": "Sum({SET} [Valor NF Venda]) - Sum({SET} [Valor NF Devolução])",
+    "quantidade": "Sum({SET} [Qtd NF Venda]) - Sum({SET} [Qtd NF Devolução])",
+    "clientes": "Count({SET} DISTINCT [Cliente])"
+  },
+  "set_analysis": "{<Ano={$(=Year(Today()))}>}",
+  "campo_data": "Data",
+  "periodo_rotulo": ""
+}

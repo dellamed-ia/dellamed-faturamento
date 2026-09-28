@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Dellamed · Relatório de segmentos e mix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --navy:#0F3C6E; --cyan:#36B0C9; --teal:#3BBFAD; --coral:#EA6852;
+  --bg:#EEF2F6; --panel:#FFFFFF; --ink:#12263F; --muted:#5E6F84; --line:#DCE3EB; --soft:#F5F8FB; --heat:15,60,110; --sel:#EA6852;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#081A30; --panel:#0E2440; --ink:#E6EEF7; --muted:#93A6BE; --line:#1E3A5E; --soft:#122C4D; --heat:54,176,201;
+}}
+:root[data-theme="dark"]{ --bg:#081A30; --panel:#0E2440; --ink:#E6EEF7; --muted:#93A6BE; --line:#1E3A5E; --soft:#122C4D; --heat:54,176,201; }
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Montserrat,"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;line-height:1.45}
+button{font-family:inherit}
+.wrap{max-width:1320px;margin:0 auto;padding:0 20px 48px}
+header.top{background:var(--navy);color:#fff;position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;right:-120px;top:-160px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(54,176,201,.45),rgba(59,191,173,0) 70%)}
+.hd{max-width:1320px;margin:0 auto;padding:24px 20px 34px;position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between}
+.logo{font-weight:700;font-size:26px;letter-spacing:-.5px}
+h1{margin:12px 0 4px;font-size:30px;font-weight:700;letter-spacing:-.6px;line-height:1.15}
+.sub{color:#BFD3EA;font-size:13.5px;max-width:70ch}
+.pill{border:1px solid #fff;background:#fff;color:var(--navy);border-radius:20px;padding:8px 16px;font-weight:700;font-size:12px;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+.fbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.fin{max-width:1320px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fin .lbl{font-size:12px;color:var(--muted);font-weight:600;margin-right:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;border:0;border-radius:16px;padding:5px 8px 5px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.chip span{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.2);font-size:11px}
+.chip.m{background:var(--soft);color:var(--ink);border:1px solid var(--line);cursor:default;padding-right:12px}
+.none{font-size:12px;color:var(--muted)}
+.fin .sp{flex:1}
+input[type=search]{font:500 13px Montserrat,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 12px;width:210px}
+.clear{border:0;background:none;color:var(--coral);font-weight:700;font-size:12px;cursor:pointer;padding:6px}
+
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border-radius:14px;overflow:hidden;margin-top:18px;box-shadow:0 8px 24px rgba(15,60,110,.10)}
+.kpi{background:var(--panel);padding:16px 18px;border:0;text-align:left;color:inherit;cursor:pointer;position:relative;transition:background .15s}
+.kpi:hover{background:var(--soft)}
+.kpi[aria-pressed="true"]{background:var(--soft)}
+.kpi[aria-pressed="true"]::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--cyan)}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:600}
+.kpi .v{font-size:25px;font-weight:700;letter-spacing:-.5px;margin-top:4px}
+.kpi .n{font-size:11.5px;color:var(--muted);margin-top:2px}
+.kpi .t{font-size:10.5px;color:var(--cyan);font-weight:700;margin-top:6px;text-transform:uppercase;letter-spacing:.4px}
+
+section{margin-top:30px}
+.sh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:12px}
+.sh h2{margin:0;font-size:19px;font-weight:700;letter-spacing:-.3px}
+.sh p{margin:3px 0 0;color:var(--muted);font-size:13px;max-width:72ch}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:1fr 1fr}.g32{grid-template-columns:3fr 2fr}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;min-width:0;position:relative}
+.card h3{margin:0 0 2px;font-size:14px;font-weight:600;padding-right:64px}
+.card .hint{font-size:12px;color:var(--muted);margin:0 0 12px}
+.cv{position:relative;width:100%}
+.empty[hidden]{display:none}
+.empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px;text-align:center;padding:20px}
+.png{position:absolute;top:14px;right:14px;border:1px solid var(--line);background:var(--soft);color:var(--muted);font-weight:700;font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer}
+.png:hover{color:var(--navy);border-color:var(--cyan)}
+
+.lines{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ln{border:0;text-align:left;color:inherit;border-radius:12px;padding:14px;background:var(--panel);border-left:5px solid var(--c);cursor:pointer;box-shadow:0 1px 0 var(--line)}
+.ln:hover{background:var(--soft)}
+.ln.dim{opacity:.45}
+.ln[aria-pressed="true"]{background:var(--c);color:#fff}
+.ln[aria-pressed="true"] .ln-m{color:rgba(255,255,255,.85)}
+.ln-n{font-weight:700;font-size:13px}.ln-v{font-size:22px;font-weight:700;margin:4px 0 2px}.ln-m{font-size:12px;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--c)}
+.ln[aria-pressed="true"] .bar{background:rgba(255,255,255,.3)}.ln[aria-pressed="true"] .bar i{background:#fff}
+
+.seg{display:inline-flex;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--navy);color:#fff}
+
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;border-top:4px solid var(--c)}
+.note strong{display:block;font-size:14.5px;margin-bottom:4px}.note p{margin:0;color:var(--muted);font-size:13px}
+.note a{color:inherit;font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-color:var(--c);text-underline-offset:3px}
+
+.tw{overflow:auto;max-height:520px;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{position:sticky;top:0;background:var(--soft);color:var(--muted);font-weight:600;text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;user-select:none;z-index:1}
+th.num,td.num{text-align:right}
+th[data-dir="asc"]::after{content:" ▲";font-size:9px}th[data-dir="desc"]::after{content:" ▼";font-size:9px}
+td{padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody tr{cursor:pointer}tbody tr:hover td{background:var(--soft)}
+tr.on td{background:color-mix(in srgb,var(--coral) 14%,transparent)!important;font-weight:600}
+td.neg{color:var(--coral);font-weight:600}
+tfoot td{font-weight:700;background:var(--soft);position:sticky;bottom:0}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;color:#fff;background:var(--c)}
+.mini{display:inline-block;height:6px;border-radius:3px;background:var(--cyan);vertical-align:middle;margin-right:6px}
+.heat td,.heat th{text-align:right}
+.heat td:first-child,.heat th:first-child{text-align:left;position:sticky;left:0;background:var(--panel);z-index:1}
+.heat th:first-child{background:var(--soft);z-index:2}
+.heat td.h{font-variant-numeric:tabular-nums}
+.heat td.h.on{outline:2px solid var(--sel);outline-offset:-2px}
+.heat tr.rs td:first-child{color:var(--coral);font-weight:700}
+.heat th.cs{box-shadow:inset 0 -3px 0 var(--coral)}
+.count{font-size:12px;color:var(--muted)}
+.foot{margin-top:36px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.toast.on{opacity:1}
+
+.lock{position:fixed;inset:0;z-index:100;background:#0F3C6E;display:grid;place-items:center;padding:24px;color:#fff;overflow:hidden}
+.lock::after{content:"";position:absolute;right:-140px;top:-180px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(54,176,201,.45),rgba(59,191,173,0) 70%);pointer-events:none}
+.lk{position:relative;z-index:1;width:100%;max-width:340px}
+.lk h2{font-size:20px;font-weight:600;margin:22px 0 6px}.lk p{color:#BFD3EA;font-size:13px;margin:0 0 18px}
+.lk input{width:100%;font:700 22px Montserrat,sans-serif;letter-spacing:8px;text-align:center;padding:12px;border-radius:12px;border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff}
+.lk input:focus{outline:none;border-color:#36B0C9}
+.lk button{width:100%;margin-top:12px;font-weight:700;font-size:14px;padding:13px;border-radius:12px;border:0;background:#fff;color:#0F3C6E;cursor:pointer}
+.lk button:disabled{opacity:.6}
+.lk .err{min-height:20px;margin-top:10px;font-size:13px;color:#FFB4A6}
+body.locked{overflow:hidden}
+body.locked #app{display:none}
+
+@media (max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.g2,.g32{grid-template-columns:1fr}.lines{grid-template-columns:repeat(2,1fr)}.notes{grid-template-columns:1fr}}
+@media (max-width:520px){h1{font-size:23px}input[type=search]{width:100%}.kpi .v{font-size:21px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body class="locked">
+<div class="lock" id="lock"><form class="lk" id="lockForm" autocomplete="off">
+  <span class="logo">dellamed</span>
+  <h2>Relatório de segmentos e mix</h2>
+  <p>Conteúdo restrito. Digite o PIN de acesso.</p>
+  <input id="pin" type="password" maxlength="32" autocapitalize="characters" spellcheck="false" aria-label="PIN de acesso" autofocus>
+  <button id="pinBtn" type="submit">Entrar</button>
+  <div class="err" id="pinErr" role="alert"></div>
+</form></div>
+
+<div id="app">
+<header class="top"><div class="hd">
+  <div><span class="logo">dellamed</span><h1>Segmentos e mix de produtos</h1><div class="sub" id="meta"></div></div>
+  <button class="pill" id="xlsBtn">Exportar Excel</button>
+</div></header>
+
+<div class="fbar"><div class="fin">
+  <span class="lbl">Filtros</span><span id="chips"></span>
+  <span class="sp"></span>
+  <input type="search" id="fSearch" placeholder="Buscar produto" aria-label="Buscar produto">
+  <button class="clear" id="fClear">Limpar tudo</button>
+</div></div>
+
+<div class="wrap">
+  <div class="kpis" id="kpis"></div>
+
+  <section>
+    <div class="sh"><div><h2>Linhas de produto</h2><p>Clique para filtrar todo o relatório. A métrica acompanha o indicador selecionado acima.</p></div></div>
+    <div class="lines" id="lines"></div>
+  </section>
+
+  <section>
+    <div class="sh"><div><h2>O que os números mostram</h2><p>Leituras recalculadas para o recorte atual.</p></div></div>
+    <div class="notes" id="notes"></div>
+  </section>
+
+  <section>
+    <div class="sh">
+      <div><h2>Segmentos de clientes</h2><p>Clique em barras, bolhas ou linhas da tabela para filtrar.</p></div>
+      <div class="seg" id="segScope"><button data-s="15" aria-pressed="true">Top 15</button><button data-s="all" aria-pressed="false">Todos</button></div>
+    </div>
+    <div class="grid g32">
+      <div class="card"><button class="png" data-png="segChart">PNG</button><h3 id="segTitle"></h3><p class="hint" id="segHint"></p><div class="cv" id="segBox"><canvas id="segChart"></canvas><div class="empty" id="segEmpty" hidden></div></div></div>
+      <div class="card"><button class="png" data-png="pareto">PNG</button><h3>Concentração do faturamento</h3><p class="hint">Share e share acumulado dos segmentos, do maior para o menor.</p><div class="cv" style="height:360px"><canvas id="pareto"></canvas></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><button class="png" data-png="bubble">PNG</button><h3>Base de clientes × receita média por cliente</h3><p class="hint">Escala logarítmica. Tamanho da bolha = faturamento.</p><div class="cv" style="height:380px"><canvas id="bubble"></canvas><div class="empty" id="bubEmpty" hidden></div></div></div>
+      <div class="card"><h3>Tabela de segmentos</h3><p class="hint">Clique no cabeçalho para ordenar e na linha para filtrar.</p><div class="tw" style="max-height:380px"><table id="segTable"></table></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><div><h2>Mix de produtos</h2><p id="mixLead"></p></div></div>
+    <div class="grid g2">
+      <div class="card"><button class="png" data-png="topChart">PNG</button><h3 id="topTitle"></h3><p class="hint" id="topHint"></p><div class="cv" style="height:470px"><canvas id="topChart"></canvas><div class="empty" id="topEmpty" hidden></div></div></div>
+      <div class="card"><button class="png" data-png="heat">PNG</button><h3 id="heatTitle"></h3><p class="hint">Clique na célula (linha + segmento), no nome do segmento ou no cabeçalho da linha.</p><div class="tw" style="max-height:470px"><table class="heat" id="heat"></table></div></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="sh" style="margin-bottom:10px"><h3>Detalhe do mix</h3><span class="count" id="mixCount"></span></div>
+      <div class="tw"><table id="mixTable"></table></div>
+    </div>
+  </section>
+
+  <div class="foot"><span id="fonte"></span><span>Marketing Dellamed</span></div>
+</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+function boot(D){
+"use strict";
+const LC={HOME:'#36B0C9',HEALTH:'#3BBFAD',ORTHOCARE:'#0F3C6E',BEAUTY:'#EA6852'};
+const LBASE=['HOME','HEALTH','ORTHOCARE','BEAUTY'];
+const ROWS=D.rows.map(r=>({l:r[0],s:r[1],p:r[2],q:+r[3]||0,f:+r[4]||0}));
+const CLI=D.cli||{}; const META=D.meta||{};
+const LINES=[...LBASE.filter(l=>ROWS.some(r=>r.l===l)),...[...new Set(ROWS.map(r=>r.l))].filter(l=>!LBASE.includes(l)).sort()];
+const lc=l=>LC[l]||'#7A93B3';
+const S={l:'',s:'',p:'',q:'',metric:'fat',scope:'15',segSort:{k:'f',d:'desc'},mixSort:{k:'f',d:'desc'}};
+
+const nf=(v,d=0)=>(v==null||!isFinite(v))?'—':v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const brl=v=>(v==null||!isFinite(v))?'—':'R$ '+nf(v,2);
+const short=v=>{if(v==null||!isFinite(v))return '—';const a=Math.abs(v),s=v<0?'−':'';if(a>=1e6)return s+'R$ '+nf(a/1e6,1)+' mi';if(a>=1e3)return s+'R$ '+nf(a/1e3,0)+' mil';return s+'R$ '+nf(a,0)};
+const pct=v=>(v==null||!isFinite(v))?'—':nf(v*100,2)+'%';
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const tc=s=>s&&s.length>1?s.charAt(0)+s.slice(1).toLowerCase():s;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id);
+
+/* ---------- dados ---------- */
+function filt(ex){return ROWS.filter(r=>(ex==='l'||ex==='all'||!S.l||r.l===S.l)&&(ex==='s'||ex==='all'||!S.s||r.s===S.s)&&(ex==='p'||ex==='all'||!S.p||r.p===S.p)&&(!S.q||r.p.toLowerCase().includes(S.q)));}
+function group(rows,key){const m=new Map();rows.forEach(r=>{const k=key(r);let g=m.get(k);if(!g){g={k,f:0,q:0,n:0};m.set(k,g)}g.f+=r.f;g.q+=r.q;g.n++;});return [...m.values()];}
+function cli(l,s,p){if(S.q)return null;const v=CLI[`${l||''}|${s||''}|${p||''}`];return v==null?null:v;}
+const MET={
+  fat:{n:'Faturamento',t:'Faturamento comercial',f:short,full:brl,h:'NF venda − NF devolução.'},
+  qtd:{n:'Unidades',t:'Unidades vendidas',f:v=>nf(v),full:v=>nf(v),h:'Soma das quantidades faturadas.'},
+  cli:{n:'Clientes',t:'Clientes distintos',f:v=>nf(v),full:v=>nf(v),h:'Clientes que compraram ao menos uma vez.'},
+  vm:{n:'Valor médio item',t:'Valor médio por item',f:brl,full:brl,h:'Faturamento ÷ unidades.'},
+  fpc:{n:'Média por cliente',t:'Faturamento médio por cliente',f:short,full:brl,h:'Faturamento ÷ clientes distintos.'}};
+function val(g,c,m){m=m||S.metric;if(m==='fat')return g.f;if(m==='qtd')return g.q;if(m==='vm')return g.q?g.f/g.q:null;if(m==='cli')return c;if(m==='fpc')return c?g.f/c:null;}
+function toggle(k,v){S[k]=S[k]===v?'':v;render();}
+function setF(o){Object.assign(S,o);render();}
+
+/* ---------- KPIs ---------- */
+function renderKpis(){
+  const R=filt(),g={f:0,q:0};R.forEach(r=>{g.f+=r.f;g.q+=r.q});const c=cli(S.l,S.s,S.p);
+  const aprox=META.cliAprox&&!S.l&&!S.s&&!S.p&&c!=null;
+  const cn=c==null?(S.q?'indisponível com busca ativa':'indisponível neste recorte'):(aprox?'soma dos segmentos':'no recorte atual');
+  const it=[['fat',short(g.f),brl(g.f)],['qtd',nf(g.q),'itens faturados'],['cli',nf(c),cn],['vm',brl(g.q?g.f/g.q:null),'faturamento ÷ unidades'],['fpc',short(c?g.f/c:null),c?'faturamento ÷ clientes':cn]];
+  $('kpis').innerHTML=it.map(([m,v,n])=>`<button class="kpi" data-m="${m}" aria-pressed="${S.metric===m}"><div class="l">${MET[m].t}</div><div class="v">${v}</div><div class="n">${n}</div><div class="t">${S.metric===m?'métrica ativa':'usar nos gráficos'}</div></button>`).join('');
+  $('kpis').querySelectorAll('.kpi').forEach(b=>b.onclick=()=>{S.metric=b.dataset.m;render();});
+}
+
+/* ---------- Linhas ---------- */
+function renderLines(){
+  const G=group(filt('l'),r=>r.l),tot=G.reduce((a,b)=>a+b.f,0);
+  const vals=LINES.map(l=>{const g=G.find(x=>x.k===l)||{f:0,q:0};return {l,g,v:val(g,cli(l,S.s,S.p))}});
+  const mx=Math.max(...vals.map(x=>Math.abs(x.v||0)),1);
+  $('lines').innerHTML=vals.map(({l,g,v})=>`<button class="ln${S.l&&S.l!==l?' dim':''}" aria-pressed="${S.l===l}" data-l="${esc(l)}" style="--c:${lc(l)}">
+    <div class="ln-n">${esc(l)}</div><div class="ln-v">${MET[S.metric].f(v)}</div>
+    <div class="ln-m">${pct(tot?g.f/tot:null)} do faturamento · ${nf(g.q)} un.</div><div class="bar"><i style="width:${Math.max(0,(v||0)/mx*100)}%"></i></div></button>`).join('');
+  $('lines').querySelectorAll('.ln').forEach(b=>b.onclick=()=>toggle('l',b.dataset.l));
+}
+
+/* ---------- Notas ---------- */
+function renderNotes(){
+  const G=group(filt('s'),r=>r.s).sort((a,b)=>b.f-a.f),tot=G.reduce((a,b)=>a+b.f,0);
+  if(!G.length){$('notes').innerHTML='<div class="note" style="--c:var(--line)"><p>Sem dados no recorte atual.</p></div>';return;}
+  const link=s=>`<a data-s="${esc(s)}">${esc(tc(s))}</a>`;
+  const top3=G.slice(0,3).reduce((a,b)=>a+b.f,0);
+  const wc=G.map(g=>({...g,c:cli(S.l,g.k,S.p)})).filter(g=>g.c);
+  let n2;
+  if(wc.length){const mc=[...wc].sort((a,b)=>b.c-a.c)[0],mf=[...wc].filter(g=>g.f>0).sort((a,b)=>b.f/b.c-a.f/a.c)[0];
+    n2=`${link(mc.k)} tem a maior base, com ${nf(mc.c)} clientes e ${pct(tot?mc.f/tot:0)} do faturamento. A maior média por cliente é de ${link(mf.k)}: ${short(mf.f/mf.c)}.`;}
+  else{const mq=[...G].sort((a,b)=>b.q-a.q)[0];n2=`Sem contagem de clientes neste recorte. Em volume, ${link(mq.k)} lidera com ${nf(mq.q)} unidades.`;}
+  const neg=G.filter(g=>g.f<0),negP=group(filt(),r=>r.l+'|'+r.s+'|'+r.p).filter(g=>g.f<0);
+  const n3=neg.length?`${neg.length} segmento(s) fecharam negativos (devoluções acima das vendas): ${neg.map(g=>link(g.k)+' '+short(g.f)).join(', ')}.`:
+    (negP.length?`Nenhum segmento negativo, mas ${negP.length} combinação(ões) produto × segmento fecharam negativas, somando ${short(negP.reduce((a,b)=>a+b.f,0))}.`:'Nenhum segmento ou produto com faturamento negativo no recorte.');
+  $('notes').innerHTML=`<div class="note" style="--c:var(--cyan)"><strong>Concentração</strong><p>${link(G[0].k)} responde por ${pct(tot?G[0].f/tot:0)} do faturamento do recorte (${short(G[0].f)}). Os 3 maiores segmentos somam ${pct(tot?top3/tot:0)}.</p></div>
+  <div class="note" style="--c:var(--teal)"><strong>Base de clientes</strong><p>${n2}</p></div>
+  <div class="note" style="--c:var(--coral)"><strong>Pontos de atenção</strong><p>${n3}</p></div>`;
+  $('notes').querySelectorAll('a[data-s]').forEach(a=>a.onclick=()=>toggle('s',a.dataset.s));
+}
+
+/* ---------- Segmentos ---------- */
+let segChart,pareto,bubble,topChart;
+function segData(){const G=group(filt('s'),r=>r.s),tot=G.reduce((a,b)=>a+b.f,0);return G.map(g=>{const c=cli(S.l,g.k,S.p);return {...g,s:g.k,c,sh:tot?g.f/tot:0,vm:g.q?g.f/g.q:null,fpc:c?g.f/c:null,v:val(g,c)}});}
+const baseScales=(xs,ys)=>({x:{ticks:{color:css('--muted'),...xs},grid:{color:css('--line')}},y:{ticks:{color:css('--ink'),font:{size:11}},grid:{display:false},...ys}});
+function hoverPtr(e,els){e.native.target.style.cursor=els.length?'pointer':'default';}
+function renderSeg(){
+  const m=S.metric,all=segData(),ok=all.filter(d=>d.v!=null).sort((a,b)=>b.v-a.v),miss=all.length-ok.length;
+  let data=S.scope==='15'?ok.slice(0,15):ok;
+  if(S.s&&!data.some(d=>d.s===S.s)){const x=ok.find(d=>d.s===S.s);if(x)data=[...data,x];}
+  $('segTitle').textContent=MET[m].t+' por segmento';
+  $('segHint').textContent=MET[m].h+(miss?` ${miss} segmento(s) sem dado de clientes neste recorte ficaram de fora.`:'');
+  $('segEmpty').hidden=!!data.length;$('segEmpty').textContent='Sem dados para esta métrica no recorte atual.';
+  $('segBox').style.height=Math.max(300,data.length*24+40)+'px';
+  const cols=data.map(d=>d.s===S.s?css('--sel'):(d.v<0?LC.BEAUTY+'88':(S.s?LC.ORTHOCARE+'55':LC.ORTHOCARE)));
+  if(segChart)segChart.destroy();
+  segChart=new Chart($('segChart'),{type:'bar',data:{labels:data.map(d=>tc(d.s)),datasets:[{data:data.map(d=>d.v),backgroundColor:cols,borderRadius:4,barPercentage:.8}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+MET[m].full(c.raw)+' · '+pct(data[c.dataIndex].sh)+' do faturamento'}}},
+      scales:baseScales({callback:v=>MET[m].f(v)},{afterFit:s=>{s.width=Math.min(170,innerWidth*.38)}}),
+      onClick:(e,els)=>{if(els.length)toggle('s',data[els[0].index].s)},onHover:hoverPtr}});
+}
+function renderPareto(){
+  const arr=segData().sort((a,b)=>b.f-a.f),tot=arr.reduce((a,b)=>a+b.f,0);let acc=0;const cum=arr.map(d=>tot?(acc+=d.f)/tot*100:0);
+  if(pareto)pareto.destroy();
+  pareto=new Chart($('pareto'),{data:{labels:arr.map((d,i)=>i+1),datasets:[
+    {type:'line',label:'Acumulado',data:cum,borderColor:LC.BEAUTY,backgroundColor:LC.BEAUTY,pointRadius:arr.map(d=>d.s===S.s?6:2),yAxisID:'y1',tension:.25},
+    {type:'bar',label:'Share',data:arr.map(d=>d.sh*100),backgroundColor:arr.map(d=>d.s===S.s?css('--sel'):LC.HOME),borderRadius:3,yAxisID:'y'}]},
+    options:{maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{labels:{color:css('--muted'),boxWidth:10}},tooltip:{callbacks:{title:c=>tc(arr[c[0].dataIndex].s),label:c=>' '+c.dataset.label+': '+nf(c.raw,2)+'%'}}},
+      scales:{x:{title:{display:true,text:'posição do segmento',color:css('--muted')},ticks:{color:css('--muted'),maxTicksLimit:12},grid:{display:false}},
+        y:{ticks:{callback:v=>nf(v,2)+'%',color:css('--muted')},grid:{color:css('--line')}},y1:{position:'right',min:0,max:100,ticks:{callback:v=>nf(v,2)+'%',color:css('--muted')},grid:{display:false}}},
+      onClick:(e,els)=>{if(els.length)toggle('s',arr[els[0].index].s)},onHover:hoverPtr}});
+}
+function renderBubble(){
+  const d=segData().filter(s=>s.f>0&&s.c>0),mx=Math.max(...d.map(s=>s.f),1);
+  $('bubEmpty').hidden=!!d.length;$('bubEmpty').textContent='Sem contagem de clientes para este recorte.';
+  if(bubble)bubble.destroy();
+  bubble=new Chart($('bubble'),{type:'bubble',data:{datasets:[{data:d.map(s=>({x:s.c,y:s.f/s.c,r:4+Math.sqrt(s.f/mx)*26,s:s.s})),
+    backgroundColor:d.map(s=>s.s===S.s?css('--sel'):(S.s?LC.HOME+'44':LC.HOME+'99')),borderColor:'rgba(255,255,255,.6)'}]},
+    options:{maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+tc(c.raw.s)+': '+nf(c.raw.x)+' clientes · média '+short(c.raw.y)+' por cliente'}}},
+      onClick:(e,els)=>{if(els.length)toggle('s',d[els[0].index].s)},onHover:hoverPtr,
+      scales:{x:{type:'logarithmic',title:{display:true,text:'clientes distintos',color:css('--muted')},ticks:{color:css('--muted'),callback:v=>[1,10,100,1000,10000,100000].includes(v)?nf(v):''},grid:{color:css('--line')}},
+        y:{type:'logarithmic',title:{display:true,text:'faturamento médio por cliente',color:css('--muted')},ticks:{color:css('--muted'),callback:v=>[10,100,1000,10000,100000,1000000,10000000].includes(v)?short(v):''},grid:{color:css('--line')}}}}});
+}
+function sortRows(arr,{k,d}){return [...arr].sort((a,b)=>{const x=a[k],y=b[k];if(x==null)return 1;if(y==null)return -1;return (typeof x==='string'?x.localeCompare(y,'pt-BR'):x-y)*(d==='asc'?1:-1)});}
+function thead(cols,sort){return '<thead><tr>'+cols.map(c=>`<th class="${c[2]?'num':''}" data-k="${c[0]}" ${sort.k===c[0]?`data-dir="${sort.d}"`:''}>${c[1]}</th>`).join('')+'</tr></thead>';}
+function bindSort(t,key,fn){t.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;S[key]={k,d:S[key].k===k&&S[key].d==='desc'?'asc':'desc'};fn();});}
+function renderSegTable(){
+  const all=segData(),arr=sortRows(all,S.segSort),mx=Math.max(...all.map(s=>s.sh),0.0001);
+  const T={f:0,q:0};all.forEach(s=>{T.f+=s.f;T.q+=s.q});const tc_=cli(S.l,'',S.p);
+  const t=$('segTable');
+  t.innerHTML=thead([['s','Segmento'],['c','Clientes',1],['q','Unidades',1],['vm','Valor médio',1],['f','Faturamento',1],['fpc','Média/cliente',1],['sh','Share',1]],S.segSort)+'<tbody>'+
+   arr.map(s=>`<tr data-s="${esc(s.s)}" class="${s.s===S.s?'on':''}"><td>${esc(tc(s.s))}</td><td class="num">${nf(s.c)}</td><td class="num">${nf(s.q)}</td><td class="num ${s.vm<0?'neg':''}">${brl(s.vm)}</td><td class="num ${s.f<0?'neg':''}">${brl(s.f)}</td><td class="num">${brl(s.fpc)}</td><td class="num"><span class="mini" style="width:${Math.max(0,s.sh/mx*46)}px"></span>${pct(s.sh)}</td></tr>`).join('')+
+   `</tbody><tfoot><tr><td>Total</td><td class="num">${nf(tc_)}</td><td class="num">${nf(T.q)}</td><td class="num">${brl(T.q?T.f/T.q:null)}</td><td class="num">${brl(T.f)}</td><td class="num">${brl(tc_?T.f/tc_:null)}</td><td class="num">100,00%</td></tr></tfoot>`;
+  bindSort(t,'segSort',renderSegTable);t.querySelectorAll('tbody tr').forEach(tr=>tr.onclick=()=>toggle('s',tr.dataset.s));
+}
+
+/* ---------- Mix ---------- */
+function renderTop(){
+  const m=S.metric,G=group(filt('p'),r=>r.p).map(g=>{const l=(ROWS.find(r=>r.p===g.k)||{}).l;const c=cli(S.l,S.s,g.k);return {...g,p:g.k,l,v:val(g,c)}}).filter(g=>g.v!=null).sort((a,b)=>b.v-a.v);
+  let top=G.slice(0,15);if(S.p&&!top.some(t=>t.p===S.p)){const x=G.find(t=>t.p===S.p);if(x)top.push(x);}
+  $('topTitle').textContent=`Subgrupos · ${MET[m].t.toLowerCase()}`;
+  $('topHint').textContent=`Top 15 de ${nf(G.length)} subgrupos no recorte. Clique para filtrar pelo produto.`;
+  $('topEmpty').hidden=!!top.length;$('topEmpty').textContent='Sem dados para esta métrica no recorte atual.';
+  if(topChart)topChart.destroy();
+  topChart=new Chart($('topChart'),{type:'bar',data:{labels:top.map(t=>t.p.length>32?t.p.slice(0,31)+'…':t.p),datasets:[{data:top.map(t=>t.v),backgroundColor:top.map(t=>t.p===S.p?css('--sel'):lc(t.l)+(S.p?'55':'')),borderRadius:4}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>top[c[0].dataIndex].p,label:c=>{const t=top[c.dataIndex];return ' '+MET[m].full(c.raw)+' · '+t.l+' · '+nf(t.q)+' un.'}}}},
+      scales:baseScales({callback:v=>MET[m].f(v)},{afterFit:s=>{s.width=Math.min(230,innerWidth*.45)}}),
+      onClick:(e,els)=>{if(els.length)toggle('p',top[els[0].index].p)},onHover:hoverPtr}});
+}
+function heatData(){
+  const R=filt('all').filter(r=>!S.p||r.p===S.p),cell={};R.forEach(r=>{const k=r.s+'|'+r.l;(cell[k]=cell[k]||{f:0,q:0});cell[k].f+=r.f;cell[k].q+=r.q;});
+  const segs=group(R,r=>r.s).sort((a,b)=>b.f-a.f).map(g=>g.k);let mx=0;const V={};
+  segs.forEach(s=>LINES.forEach(l=>{const g=cell[s+'|'+l];const v=g?val(g,cli(l,s,S.p)):null;V[s+'|'+l]=v;if(v!=null)mx=Math.max(mx,Math.abs(v));}));
+  return {segs,V,mx};
+}
+function renderHeat(){
+  const {segs,V,mx}=heatData(),rgb=css('--heat'),m=S.metric;
+  $('heatTitle').textContent='Linha × segmento · '+MET[m].t.toLowerCase();
+  const t=$('heat');
+  t.innerHTML='<thead><tr><th>Segmento</th>'+LINES.map(l=>`<th data-l="${esc(l)}" class="${S.l===l?'cs':''}"><span class="tag" style="--c:${lc(l)}">${esc(l)}</span></th>`).join('')+'</tr></thead><tbody>'+
+   segs.map(s=>`<tr class="${S.s===s?'rs':''}"><td data-s="${esc(s)}">${esc(tc(s))}</td>`+LINES.map(l=>{const v=V[s+'|'+l];const a=v?Math.max(.05,Math.pow(Math.abs(v)/mx,.45)):0;
+     const dim=(S.l&&S.l!==l)||(S.s&&S.s!==s);const bg=v<0?`rgba(234,104,82,${a})`:`rgba(${rgb},${a*(dim?.35:1)})`;
+     return `<td class="h${S.s===s&&S.l===l?' on':''}" data-s="${esc(s)}" data-l="${esc(l)}" style="background:${bg};color:${a>.5&&!dim?'#fff':'var(--ink)'}">${v==null?'—':MET[m].f(v)}</td>`}).join('')+'</tr>').join('')+'</tbody>';
+  t.querySelectorAll('td.h').forEach(td=>td.onclick=()=>{const same=S.s===td.dataset.s&&S.l===td.dataset.l;setF({s:same?'':td.dataset.s,l:same?'':td.dataset.l});});
+  t.querySelectorAll('td[data-s]:not(.h)').forEach(td=>td.onclick=()=>toggle('s',td.dataset.s));
+  t.querySelectorAll('th[data-l]').forEach(th=>th.onclick=()=>toggle('l',th.dataset.l));
+}
+function renderMixTable(){
+  const R=filt(),tot=R.reduce((a,b)=>a+b.f,0),rows=sortRows(R.map(r=>({...r,vm:r.q?r.f/r.q:null,sh:tot?r.f/tot:0})),S.mixSort);
+  $('mixCount').textContent=`${nf(rows.length)} de ${nf(ROWS.length)} registros · ${brl(tot)}`;
+  const t=$('mixTable');
+  t.innerHTML=thead([['l','Linha'],['s','Segmento'],['p','Subgrupo'],['q','Unidades',1],['vm','Valor médio',1],['f','Faturamento',1],['sh','Share no recorte',1]],S.mixSort)+'<tbody>'+
+   (rows.length?rows.map(r=>`<tr data-p="${esc(r.p)}" class="${r.p===S.p?'on':''}"><td><span class="tag" style="--c:${lc(r.l)}">${esc(r.l)}</span></td><td>${esc(tc(r.s))}</td><td>${esc(r.p)}</td><td class="num">${nf(r.q)}</td><td class="num ${r.vm<0?'neg':''}">${brl(r.vm)}</td><td class="num ${r.f<0?'neg':''}">${brl(r.f)}</td><td class="num">${pct(r.sh)}</td></tr>`).join('')
+   :'<tr><td colspan="7" style="padding:20px;color:var(--muted)">Nenhum registro neste recorte.</td></tr>')+'</tbody>';
+  bindSort(t,'mixSort',renderMixTable);t.querySelectorAll('tbody tr[data-p]').forEach(tr=>tr.onclick=()=>toggle('p',tr.dataset.p));
+}
+
+/* ---------- filtros ---------- */
+function renderChips(){
+  const c=[];if(S.l)c.push(['l','Linha: '+S.l]);if(S.s)c.push(['s','Segmento: '+tc(S.s)]);if(S.p)c.push(['p','Produto: '+S.p]);if(S.q)c.push(['q','Busca: "'+S.q+'"']);
+  $('chips').innerHTML=(c.length?c.map(([k,t])=>`<button class="chip" data-k="${k}" aria-label="Remover ${esc(t)}">${esc(t)} <span>✕</span></button>`).join(' '):'<span class="none">Nenhum filtro</span>')+
+    ` <span class="chip m">Métrica: ${MET[S.metric].n}</span>`;
+  $('chips').querySelectorAll('.chip[data-k]').forEach(b=>b.onclick=()=>{S[b.dataset.k]='';if(b.dataset.k==='q')$('fSearch').value='';render();});
+}
+function render(){
+  Chart.defaults.font.family='Montserrat, Segoe UI, sans-serif';Chart.defaults.color=css('--muted');
+  renderChips();renderKpis();renderLines();renderNotes();renderSeg();renderPareto();renderBubble();renderSegTable();renderTop();renderHeat();renderMixTable();
+}
+let tm;$('fSearch').oninput=e=>{clearTimeout(tm);tm=setTimeout(()=>{S.q=e.target.value.trim().toLowerCase();render();},220)};
+$('fClear').onclick=()=>{Object.assign(S,{l:'',s:'',p:'',q:''});$('fSearch').value='';render();};
+document.querySelectorAll('#segScope button').forEach(b=>b.onclick=()=>{S.scope=b.dataset.s;document.querySelectorAll('#segScope button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderSeg();});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',render);
+
+/* ---------- cabeçalho ---------- */
+const upd=META.atualizado?new Date(META.atualizado):null;
+const updTxt=upd&&!isNaN(upd)?upd.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short',timeZone:'America/Sao_Paulo'}):'';
+$('meta').textContent=`Faturamento comercial (NF venda − NF devolução) · ${META.periodo||''}${updTxt?' · Atualizado em '+updTxt:''}`;
+$('mixLead').textContent=`${nf(ROWS.length)} registros de linha × segmento × subgrupo, ${nf(new Set(ROWS.map(r=>r.p)).size)} subgrupos.`;
+$('fonte').textContent=`Fonte: ${META.fonte||'—'} · ${META.periodo||''}`;
+
+/* ---------- exportação ---------- */
+function toast(m){const e=$('toast');e.textContent=m;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2600);}
+function save(name,blob){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);toast('Arquivo gerado: '+name);}
+const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function recorte(){return [S.l,S.s&&tc(S.s),S.p,S.q&&'busca '+S.q].filter(Boolean).join(' · ')||'sem filtros';}
+function framed(src,title,sub){
+  const sc=2,pad=28*sc,head=70*sc,w=src.width+pad*2,h=src.height+pad*2+head,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  x.fillStyle=css('--panel')||'#fff';x.fillRect(0,0,w,h);x.fillStyle='#0F3C6E';x.fillRect(0,0,w,6*sc);
+  x.fillStyle=css('--ink');x.font=`700 ${17*sc}px Montserrat, sans-serif`;x.fillText(title,pad,pad+14*sc);
+  x.fillStyle=css('--muted');x.font=`500 ${11*sc}px Montserrat, sans-serif`;x.fillText(sub,pad,pad+34*sc);x.fillText('Recorte: '+recorte(),pad,pad+50*sc);
+  x.textAlign='right';x.fillStyle='#0F3C6E';x.font=`700 ${14*sc}px Montserrat, sans-serif`;x.fillText('dellamed',w-pad,pad+14*sc);
+  x.drawImage(src,pad,pad+head);return c;
+}
+function chartCanvas(ch){const s=2,cv=ch.canvas,c=document.createElement('canvas');c.width=cv.clientWidth*s;c.height=cv.clientHeight*s;const p=ch.options.devicePixelRatio;ch.options.devicePixelRatio=s;ch.resize();c.getContext('2d').drawImage(cv,0,0,c.width,c.height);ch.options.devicePixelRatio=p;ch.resize();return c;}
+function heatCanvas(){
+  const {segs,V,mx}=heatData(),s=2,cw=130*s,lw=200*s,rh=24*s,hh=30*s,c=document.createElement('canvas');c.width=lw+cw*LINES.length;c.height=hh+rh*Math.max(1,segs.length);
+  const x=c.getContext('2d'),rgb=css('--heat');x.textBaseline='middle';x.font=`600 ${11*s}px Montserrat, sans-serif`;
+  LINES.forEach((l,i)=>{x.fillStyle=lc(l);x.fillRect(lw+cw*i+4*s,4*s,cw-8*s,hh-8*s);x.fillStyle='#fff';x.textAlign='center';x.fillText(l,lw+cw*i+cw/2,hh/2);});
+  segs.forEach((sg,j)=>{const y=hh+rh*j;x.textAlign='left';x.fillStyle=css('--ink');x.font=`500 ${11*s}px Montserrat, sans-serif`;x.fillText(tc(sg),6*s,y+rh/2);
+    LINES.forEach((l,i)=>{const v=V[sg+'|'+l],a=v?Math.max(.05,Math.pow(Math.abs(v)/mx,.45)):0;x.fillStyle=v<0?`rgba(234,104,82,${a})`:`rgba(${rgb},${a})`;x.fillRect(lw+cw*i,y,cw-1,rh-1);
+      x.fillStyle=a>.5?'#fff':css('--ink');x.textAlign='right';x.fillText(v==null?'—':MET[S.metric].f(v),lw+cw*(i+1)-8*s,y+rh/2);});
+    x.fillStyle=css('--line');x.fillRect(0,y+rh-1,c.width,1);});
+  return c;
+}
+document.querySelectorAll('[data-png]').forEach(b=>b.onclick=()=>{
+  const id=b.dataset.png,card=b.closest('.card'),title=card.querySelector('h3').textContent,sub=((card.querySelector('.hint')||{}).textContent||'')+'  ·  '+(META.periodo||'');
+  const src=id==='heat'?heatCanvas():chartCanvas({segChart,pareto,bubble,topChart}[id]);
+  framed(src,title,sub).toBlob(bl=>save(`dellamed-${slug(title)}${recorte()!=='sem filtros'?'-'+slug(recorte()):''}.png`,bl),'image/png');
+});
+$('xlsBtn').onclick=()=>{
+  if(!window.XLSX){toast('A biblioteca de Excel não carregou. Recarregue a página.');return;}
+  const wb=XLSX.utils.book_new(),M='#,##0.00',I='#,##0',P='0.00%';
+  const add=(name,rows,widths,fmt,hdr=0)=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=widths.map(w=>({wch:w}));const r=XLSX.utils.decode_range(ws['!ref']);
+    if(fmt)for(let R=hdr+1;R<=r.e.r;R++)for(const [C,z] of fmt){const a=XLSX.utils.encode_cell({r:R,c:C});if(ws[a]&&typeof ws[a].v==='number')ws[a].z=z;}
+    ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:hdr,c:0},e:r.e})};XLSX.utils.book_append_sheet(wb,ws,name);};
+  const T={f:0,q:0};ROWS.forEach(r=>{T.f+=r.f;T.q+=r.q});const tcl=CLI['||'];
+  const res=XLSX.utils.aoa_to_sheet([['Dellamed · Segmentos e mix'],['Período',META.periodo||''],['Atualizado em',updTxt],['Fonte',META.fonte||''],[],['Indicador','Valor'],['Faturamento comercial (R$)',T.f],['Unidades vendidas',T.q],['Clientes distintos'+(META.cliAprox?' (soma dos segmentos)':''),tcl??''],['Valor médio por item (R$)',T.q?T.f/T.q:''],['Faturamento médio por cliente (R$)',tcl?T.f/tcl:'']]);
+  res['!cols']=[{wch:44},{wch:22}];['B7','B10','B11'].forEach(a=>{if(res[a])res[a].z=M});['B8','B9'].forEach(a=>{if(res[a])res[a].z=I});XLSX.utils.book_append_sheet(wb,res,'Resumo');
+  const R=filt(),rt=R.reduce((a,b)=>a+b.f,0);
+  add('Recorte atual',[['Filtros: '+recorte()],['Linha','Segmento','Subgrupo','Unidades','Valor médio item (R$)','Faturamento (R$)','Share no recorte']].concat(sortRows(R,{k:'f',d:'desc'}).map(r=>[r.l,r.s,r.p,r.q,r.q?r.f/r.q:'',r.f,rt?r.f/rt:0])),[12,26,40,12,20,18,16],[[3,I],[4,M],[5,M],[6,P]],1);
+  const LG=group(ROWS,r=>r.l);add('Linhas',[['Linha','Clientes distintos','Unidades','Valor médio item (R$)','Faturamento (R$)','Share']].concat(LINES.map(l=>{const g=LG.find(x=>x.k===l)||{f:0,q:0};return [l,CLI[`${l}||`]??'',g.q,g.q?g.f/g.q:'',g.f,T.f?g.f/T.f:0]})),[14,16,12,20,18,10],[[1,I],[2,I],[3,M],[4,M],[5,P]]);
+  const SG=group(ROWS,r=>r.s).sort((a,b)=>b.f-a.f);add('Segmentos',[['Segmento','Clientes distintos','Unidades','Valor médio item (R$)','Faturamento (R$)','Faturamento médio por cliente (R$)','Share']].concat(SG.map(g=>{const c=CLI[`|${g.k}|`];return [g.k,c??'',g.q,g.q?g.f/g.q:'',g.f,c?g.f/c:'',T.f?g.f/T.f:0]})),[26,16,12,20,18,28,10],[[1,I],[2,I],[3,M],[4,M],[5,M],[6,P]]);
+  add('Mix completo',[['Linha','Segmento','Subgrupo','Unidades','Valor médio item (R$)','Faturamento (R$)','Share no segmento']].concat(sortRows(ROWS,{k:'f',d:'desc'}).map(r=>{const st=(SG.find(g=>g.k===r.s)||{}).f;return [r.l,r.s,r.p,r.q,r.q?r.f/r.q:'',r.f,st?r.f/st:'']})),[12,26,40,12,20,18,18],[[3,I],[4,M],[5,M],[6,P]]);
+  const cell={};ROWS.forEach(r=>{const k=r.s+'|'+r.l;cell[k]=(cell[k]||0)+r.f});
+  add('Linha x Segmento',[['Segmento'].concat(LINES).concat(['Total'])].concat(SG.map(g=>{const v=LINES.map(l=>cell[g.k+'|'+l]||0);return [g.k].concat(v).concat([v.reduce((a,b)=>a+b,0)])})),[26].concat(LINES.map(()=>16)).concat([16]),LINES.map((_,i)=>[i+1,M]).concat([[LINES.length+1,M]]));
+  const buf=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  save(`dellamed-segmentos-mix-${slug(META.periodo||'')}.xlsx`,new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+};
+
+if(window.Chart)render();else window.addEventListener('load',render);
+}
+</script>
+<script>
+const ENC=__ENC__;
+(function(){
+const u8=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const f=document.getElementById('lockForm'),inp=document.getElementById('pin'),btn=document.getElementById('pinBtn'),err=document.getElementById('pinErr');
+let fails=0,wait=0;
+f.addEventListener('submit',async e=>{e.preventDefault();
+  if(Date.now()<wait){err.textContent='Muitas tentativas. Aguarde alguns segundos.';return;}
+  const pin=inp.value.trim().toUpperCase();if(!pin){err.textContent='Digite o PIN.';return;}
+  btn.disabled=true;btn.textContent='Verificando…';err.textContent='';
+  let data=null;
+  try{
+    const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:u8(ENC.s),iterations:ENC.n,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+    const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:u8(ENC.v)},key,u8(ENC.c));
+    const txt=await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+    data=JSON.parse(txt);inp.value='';
+  }catch(x){
+    fails++;inp.value='';inp.focus();
+    if(fails>=5){wait=Date.now()+30000;fails=0;err.textContent='PIN incorreto. Aguarde 30 segundos para tentar de novo.';}
+    else err.textContent='PIN incorreto.';
+  }finally{btn.disabled=false;btn.textContent='Entrar';}
+  if(data){document.getElementById('lock').remove();document.body.classList.remove('locked');boot(data);}
+});
+})();
+</script>
+</body>
+</html>
